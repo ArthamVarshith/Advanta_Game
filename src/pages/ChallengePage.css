@@ -1,0 +1,282 @@
+/* ─────────────────────────────
+   CONTAINER
+───────────────────────────── */
+.challenge-page-container {
+  position: relative;
+  width: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+.fluid-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Wrapper */
+.challenge-content-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.challenge-content-wrapper.shake {
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  25% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+  75% { transform: translateX(-8px); }
+}
+
+/* ─────────────────────────────
+   TOP HUD
+───────────────────────────── */
+.top-hud {
+  position: absolute;
+  top: 12px;
+  left: 0;
+  width: 100%;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 12px;
+  z-index: 50;
+}
+
+.gear-icon-wrapper {
+  width: clamp(45px, 12vw, 60px);
+  height: clamp(45px, 12vw, 60px);
+
+  background-image: url('/assets/images/Settings BG.png');
+  background-size: 100% 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─────────────────────────────
+   ACTION AREA
+───────────────────────────── */
+.action-layer-container {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* ─────────────────────────────
+   PLAY AREA (FIXED 🔥)
+───────────────────────────── */
+.interactive-play-area {
+  width: 70%;
+  min-height: 45vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 10px;
+
+  position: relative;
+
+  margin-top: clamp(140px, 25vh, 220px); /* 🔥 moved UP */
+}
+
+/* ─────────────────────────────
+   QUESTION BANNER (FIXED)
+───────────────────────────── */
+.question-wood-banner {
+  background: url('/assets/images/Button 1.png') no-repeat center;
+  background-size: 100% 100%;
+
+  width: clamp(220px, 90%, 320px);
+  height: clamp(70px, 6vh, 100px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 10px 15px;
+  text-align: center;
+
+  box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+}
+
+.question-text-inner {
+  color: #3e1b00;
+  font-size: clamp(16px, 4.5vw, 22px);
+  font-weight: 500;
+  font-size: 28px;
+  font-family: 'Baloo', 'NotoSansGurmukhi', sans-serif;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* ─────────────────────────────
+   GRID
+───────────────────────────── */
+.options-grid-3x3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: clamp(10px, 2vw, 15px);
+
+  width: 90%;
+  max-width: 320px;
+}
+
+.wood-tile-btn {
+  background: url('/assets/images/Buttons for letters.png') no-repeat center;
+  background-size: 100% 100%;
+
+  height: clamp(50px, 5vh, 65px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: clamp(20px, 6vw, 28px);
+  font-family: 'Baloo', 'NotoSansGurmukhi', sans-serif;
+
+  color: #3e1b00;
+  cursor: pointer;
+}
+
+.wood-tile-btn:active {
+  transform: scale(0.95);
+}
+
+/* ─────────────────────────────
+   WRONG / CORRECT BUBBLES
+───────────────────────────── */
+.wrong-selections-tray {
+  position: absolute;
+  bottom: 60px;
+  left: 10px;
+
+  display: flex;
+  gap: 6px;
+  z-index: 80;
+}
+
+.wrong-bubble-indicator,
+.correct-bubble-indicator {
+  width: clamp(40px, 10vw, 50px);
+  height: clamp(40px, 10vw, 50px);
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: clamp(16px, 5vw, 22px);
+  font-weight: bold;
+}
+
+.wrong-bubble-indicator {
+  background: radial-gradient(circle, #ff4d4d, #b30000);
+  color: white;
+}
+
+.correct-bubble-indicator {
+  background: radial-gradient(circle, #4caf50, #1b5e20);
+  color: white;
+}
+
+/* 🔥 COLLECTED BUBBLES FIX */
+.collected-bubbles-tray {
+  position: absolute;
+  left: 50%;
+  bottom: 9%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 100;
+}
+
+/* ─────────────────────────────
+   SUCCESS SCREEN (RESTORED 🔥)
+───────────────────────────── */
+.success-overlay-container {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 200;
+
+  backdrop-filter: blur(12px);
+  background: rgba(0,0,0,0.35);
+}
+
+/* Sparkles */
+.sparkle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: white;
+
+  clip-path: polygon(
+    50% 0%, 61% 35%, 98% 35%,
+    68% 57%, 79% 91%,
+    50% 70%, 21% 91%,
+    32% 57%, 2% 35%, 39% 35%
+  );
+
+  animation: twinkle 1s infinite alternate;
+}
+
+@keyframes twinkle {
+  from { opacity: 0.2; }
+  to { opacity: 1; }
+}
+
+/* Success orb */
+.massive-orb {
+  width: clamp(140px, 40vw, 200px);
+  height: clamp(140px, 40vw, 200px);
+
+  background: url('/assets/images/Correct answer BG.png') no-repeat center;
+  background-size: 100% 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: clamp(40px, 12vw, 80px);
+  color: white;
+
+  animation: pop-in-bounce 0.6s ease-out;
+}
+
+@keyframes pop-in-bounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

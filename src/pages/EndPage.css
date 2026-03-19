@@ -1,0 +1,72 @@
+.end-page-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.end-video-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.end-video-overlay {
+  position: absolute;
+  left: 0;
+  top: -10%;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 25vw;
+  /* Position near the bottom, scalable */
+}
+
+/* Button */
+.cashback-btn-video {
+  background: url('/assets/images/Button 2.png') no-repeat center;
+  background-size: 100% 100%;
+  border: none;
+  font-family: 'Baloo', 'NotoSansGurmukhi', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #3e1b00;
+  width: clamp(150px, 30vw, 200px);
+  height: clamp(45px, 1vw, 60px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+  padding-bottom: 5px;
+  /* Adjust for optical vertical centering */
+  filter: drop-shadow(0px 8px 12px rgba(0, 0, 0, 0.6));
+  /* Makes button pop over video */
+  opacity: 0;
+  transform: scale(0);
+  animation: popInBtn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popInBtn {
+  0% {
+    opacity: 0;
+    transform: scale(0) translateY(50px) rotate(-10deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotate(0deg);
+  }
+}
+
+.cashback-btn-video:active {
+  transform: scale(0.95) !important;
+}
