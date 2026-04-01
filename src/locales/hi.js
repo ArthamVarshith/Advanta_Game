@@ -28,6 +28,7 @@ const hi = {
   
   // Challenge Page
   "happinessMeter": "सफलता मीटर",
+  "timeOverTitle": "गलत उत्तर, फिर से प्रयास करें!",
   "selectedLetters": "चुने गए अक्षर",
   "gridOptions": ["ण", "सु", "जै", "बो", "स", "क", "र", "प", "जं"],
   

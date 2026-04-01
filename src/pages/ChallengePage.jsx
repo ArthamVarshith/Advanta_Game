@@ -2,150 +2,342 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import HappinessMeter from '../components/HappinessMeter';
 import Timer from '../components/Timer';
+import SettingsMenu from '../components/SettingsMenu';
 import './ChallengePage.css';
 import '../components/ScrollUI.css';
+import { APP_AUDIO, APP_IMAGES, LEVEL_BACKGROUNDS } from '../config/media';
 
-const GearIcon = () => (
-  <svg width="34" height="34" viewBox="0 0 24 24" fill="white" style={{filter: 'drop-shadow(1px 2px 2px rgba(0,0,0,0.5))'}}>
-    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
-  </svg>
-);
+const timerAudio = (typeof window !== 'undefined' && typeof Audio !== 'undefined') ? new Audio(APP_AUDIO.timer) : null;
+const correctAudio = (typeof window !== 'undefined' && typeof Audio !== 'undefined') ? new Audio(APP_AUDIO.correct) : null;
+const wrongAudio = (typeof window !== 'undefined' && typeof Audio !== 'undefined') ? new Audio(APP_AUDIO.wrong) : null;
 
-
-const ChallengePage = ({ 
-  currentLevel, 
-  happinessScore, 
-  setHappinessScore, 
-  onWrongAnswer, 
-  onCorrectAnswer, 
+const ChallengePage = ({
+  currentLevel,
+  happinessScore,
+  setHappinessScore,
+  onWrongAnswer,
+  onCorrectAnswer,
   onLevelComplete,
-  collectedBubbles,
-  setCollectedBubbles
+  onSkipVideo,
+  onPreviousQuestion,
+  onNextQuestion,
+  onRestartGame,
+  bubbleTrail,
+  setBubbleTrail,
 }) => {
+  const { t, shouldMuteAll, isMuted, setIsMuted, isPageVisible, setIsGamePaused } = useLanguage();
 
-  const { t } = useLanguage();
-  
-  const [challengeStage, setChallengeStage] = useState('action');
-  const [timer, setTimer] = useState(10); 
+  const [challengeStage] = useState('action');
+  const [timer, setTimer] = useState(10);
   const [isShaking, setIsShaking] = useState(false);
-  const [highlightedOption, setHighlightedOption] = useState(null); 
+  const [highlightedOption, setHighlightedOption] = useState(null);
+  const [showTimeoutOverlay, setShowTimeoutOverlay] = useState(false);
   const [wrongSelectionsThisLevel, setWrongSelectionsThisLevel] = useState([]);
-
-  const tickAudioRef = useRef(typeof Audio !== 'undefined' ? new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg") : null);
+  const [timedOutOption, setTimedOutOption] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
   const timerIntervalRef = useRef(null);
+  const highlightTimeoutRef = useRef(null);
+  const timeoutContinueRef = useRef(null);
+  const onWrongAnswerRef = useRef(onWrongAnswer);
+  const wasAutoPausedRef = useRef(false);
+  const highlightRemainingRef = useRef(5000);
+  const highlightStartedAtRef = useRef(null);
 
   const levels = t.levels;
-  const gridOptions = t.gridOptions; 
+  const gridOptions = t.gridOptions;
+  const currentData = levels[currentLevel];
 
-  // Cleanup timers on dismount
   useEffect(() => {
-    return () => {
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    };
+    onWrongAnswerRef.current = onWrongAnswer;
+  }, [onWrongAnswer]);
+
+  useEffect(() => () => {
+    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+    if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
+    if (timeoutContinueRef.current) clearTimeout(timeoutContinueRef.current);
+    [timerAudio, correctAudio, wrongAudio].forEach((audio) => {
+      if (!audio) return;
+      audio.pause();
+      audio.currentTime = 0;
+    });
   }, []);
 
-  // Sequence Hooks
   useEffect(() => {
-    if (challengeStage === 'action') {
-      setTimer(10);
+    if (!highlightedOption) {
+      highlightRemainingRef.current = 5000;
+      highlightStartedAtRef.current = null;
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current);
+        highlightTimeoutRef.current = null;
+      }
+      return undefined;
+    }
+
+    if (isPaused) {
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current);
+        highlightTimeoutRef.current = null;
+      }
+
+      if (highlightStartedAtRef.current !== null) {
+        const elapsed = Date.now() - highlightStartedAtRef.current;
+        highlightRemainingRef.current = Math.max(0, highlightRemainingRef.current - elapsed);
+        highlightStartedAtRef.current = null;
+      }
+
+      return undefined;
+    }
+
+    highlightStartedAtRef.current = Date.now();
+    highlightTimeoutRef.current = setTimeout(() => {
+      highlightTimeoutRef.current = null;
+      highlightStartedAtRef.current = null;
+      highlightRemainingRef.current = 5000;
+      setHighlightedOption(null);
+      onLevelComplete();
+    }, highlightRemainingRef.current);
+
+    return () => {
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current);
+        highlightTimeoutRef.current = null;
+      }
+    };
+  }, [highlightedOption, isPaused, onLevelComplete]);
+
+  useEffect(() => {
+    setShowTimeoutOverlay(false);
+    setWrongSelectionsThisLevel([]);
+    setHighlightedOption(null);
+    setTimedOutOption(null);
+    setTimer(10);
+    setIsPaused(false);
+  }, [currentLevel]);
+
+  useEffect(() => {
+    if (!isPageVisible) {
+      if (!isPaused && !highlightedOption && !showTimeoutOverlay) {
+        wasAutoPausedRef.current = true;
+        setIsPaused(true);
+      }
+      return;
+    }
+
+    if (wasAutoPausedRef.current) {
+      wasAutoPausedRef.current = false;
+      setIsPaused(false);
+    }
+  }, [highlightedOption, isPageVisible, isPaused, showTimeoutOverlay]);
+
+  useEffect(() => {
+    [timerAudio, correctAudio, wrongAudio].forEach((audio) => {
+      if (!audio) return;
+      audio.preload = 'auto';
+      audio.muted = shouldMuteAll;
+      if (shouldMuteAll) {
+        audio.pause();
+      }
+    });
+  }, [shouldMuteAll]);
+
+  useEffect(() => {
+    setIsGamePaused(isPaused);
+
+    return () => {
+      setIsGamePaused(false);
+    };
+  }, [isPaused, setIsGamePaused]);
+
+  useEffect(() => {
+    if (!showTimeoutOverlay || isPaused) return undefined;
+
+    timeoutContinueRef.current = setTimeout(() => {
+      if (timeoutContinueRef.current) {
+        clearTimeout(timeoutContinueRef.current);
+        timeoutContinueRef.current = null;
+      }
+      if (timedOutOption) {
+        updateBubbleTrailForCurrentLevel({ value: timedOutOption, type: 'timeout' });
+      }
+      setShowTimeoutOverlay(false);
+      setTimedOutOption(null);
+      setWrongSelectionsThisLevel([]);
+      onLevelComplete();
+    }, 3000);
+
+    return () => {
+      if (timeoutContinueRef.current) {
+        clearTimeout(timeoutContinueRef.current);
+        timeoutContinueRef.current = null;
+      }
+    };
+  }, [showTimeoutOverlay, isPaused, timedOutOption, currentLevel, onLevelComplete, setBubbleTrail]);
+
+  useEffect(() => {
+    if (challengeStage !== 'action' || highlightedOption || showTimeoutOverlay || isPaused || timer <= 0) {
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-      
-      timerIntervalRef.current = setInterval(() => {
-        setTimer((prev) => {
-          if (prev > 0) {
-            return prev - 1;
-          } else {
-            clearInterval(timerIntervalRef.current);
-            onWrongAnswer();
-            return 0;
+      if (timerAudio) timerAudio.pause();
+      return undefined;
+    }
+
+    if (timerAudio) {
+      timerAudio.loop = true;
+      timerAudio.currentTime = 0;
+      if (!shouldMuteAll) {
+        const playPromise = timerAudio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {});
+        }
+      }
+    }
+
+    timerIntervalRef.current = setInterval(() => {
+      setTimer((prev) => {
+        if (prev > 1) {
+          return prev - 1;
+        }
+
+        clearInterval(timerIntervalRef.current);
+        if (timerAudio) timerAudio.pause();
+        if (wrongAudio && !shouldMuteAll) {
+          wrongAudio.currentTime = 0;
+          const playPromise = wrongAudio.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {});
           }
-        });
-      }, 1000);
-      return () => clearInterval(timerIntervalRef.current);
-    } 
-    else if (challengeStage === 'post') {
-      const timeout = setTimeout(() => {
-          onLevelComplete();
-          setHighlightedOption(null);
-          setWrongSelectionsThisLevel([]);
-          setChallengeStage('action');
-      }, 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [currentLevel, challengeStage]);
+        }
+        if (currentData) {
+          setTimedOutOption(currentData.correct);
+          setShowTimeoutOverlay(true);
+        }
+        onWrongAnswerRef.current?.();
+        return 0;
+      });
+    }, 1000);
 
-
-  const handleChoose = (e, value) => {
-    e.stopPropagation(); // prevent triggering page click when clicking a tile
-    if (challengeStage !== 'action' || highlightedOption) return;
-
-    const level = levels[currentLevel];
-    if (!level) return;
-    
-    if (value === level.correct) {
+    return () => {
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-      setHighlightedOption(value);
-      setHappinessScore(prev => prev + 10);
-      onCorrectAnswer(value);
-      
-      setTimeout(() => {
-          setCollectedBubbles(prev => [...prev, value]);
-          setChallengeStage('post');
-      }, 2500);
+      if (timerAudio) timerAudio.pause();
+    };
+  }, [challengeStage, highlightedOption, showTimeoutOverlay, isPaused, timer, shouldMuteAll, currentData]);
 
-    } else {
-      setIsShaking(true);
-      setTimeout(() => setIsShaking(false), 300);
-      setWrongSelectionsThisLevel(prev => [...prev, value]);
-      onWrongAnswer();
-    }
-  };
-
-  const currentData = levels[currentLevel];
   if (!currentData) return null;
 
-  let displayText = "";
-  if (challengeStage === 'action') displayText = currentData.action;
-  else if (challengeStage === 'post') displayText = currentData.post;
+  const displayText = challengeStage === 'action' ? currentData.action : currentData.post;
+  const currentLevelBubble = bubbleTrail[currentLevel] || null;
+  const visibleBubbleTrail = bubbleTrail.filter((item) => {
+    if (!item) return false;
+    if (item.level === currentLevel) return false;
+    return true;
+  });
 
-  const sparkles = Array.from({ length: 12 }).map((_, i) => (
-    <div key={i} className="sparkle" style={{
-      top: `${20 + Math.random() * 60}%`, 
-      left: `${10 + Math.random() * 80}%`,
-      animationDelay: `${Math.random()}s`,
-      transform: `scale(${0.5 + Math.random()})`
-    }}></div>
-  ));
+  const updateBubbleTrailForCurrentLevel = (entry) => {
+    setBubbleTrail((prev) => {
+      const nextTrail = [...prev];
+      nextTrail[currentLevel] = { ...entry, level: currentLevel };
+      return nextTrail;
+    });
+  };
 
-  // Per-level background images
-  const levelBackgrounds = [
-    '/assets/images/Frame 5 end.png',
-    '/assets/images/Frame 6 end.png',
-    '/assets/images/Frame 7 end.png',
-    '/assets/images/Frame 8 end.png',
-    '/assets/images/Frame 9 end.png',
-  ];
+  const handleTogglePause = () => {
+    setIsPaused((prev) => !prev);
+  };
+
+  const handleToggleMute = () => {
+    setIsMuted((prev) => !prev);
+  };
+
+  const handleGoHome = () => {
+    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+    if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
+    if (timeoutContinueRef.current) clearTimeout(timeoutContinueRef.current);
+    [timerAudio, correctAudio, wrongAudio].forEach((audio) => {
+      if (!audio) return;
+      audio.pause();
+      audio.currentTime = 0;
+    });
+    setIsPaused(false);
+    onRestartGame();
+  };
+
+  const handleChoose = (event, value) => {
+    event.stopPropagation();
+    if (challengeStage !== 'action' || highlightedOption || isPaused || showTimeoutOverlay) return;
+
+    if (value === currentData.correct) {
+      if (timerAudio) timerAudio.pause();
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      setHighlightedOption(value);
+      setHappinessScore((prev) => prev + 10);
+      onCorrectAnswer(value);
+
+      if (correctAudio && !shouldMuteAll) {
+        correctAudio.currentTime = 0;
+        const playPromise = correctAudio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {});
+        }
+      }
+
+      updateBubbleTrailForCurrentLevel({ value, type: 'correct' });
+      highlightRemainingRef.current = 5000;
+      highlightStartedAtRef.current = null;
+      return;
+    }
+
+    const nextWrongSelections = [...wrongSelectionsThisLevel, value];
+    const hasReachedWrongLimit = nextWrongSelections.length >= 3;
+
+    setIsShaking(true);
+    if (wrongAudio && !shouldMuteAll) {
+      wrongAudio.currentTime = 0;
+      const playPromise = wrongAudio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+      }
+    }
+    setTimeout(() => setIsShaking(false), 500);
+    setWrongSelectionsThisLevel(nextWrongSelections);
+    updateBubbleTrailForCurrentLevel({ value, type: 'wrong' });
+
+    if (hasReachedWrongLimit) {
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      if (timerAudio) {
+        timerAudio.pause();
+        timerAudio.currentTime = 0;
+      }
+      setHappinessScore(0);
+      setTimedOutOption(currentData.correct);
+      setShowTimeoutOverlay(true);
+      return;
+    }
+
+    onWrongAnswer();
+  };
 
   return (
     <div className="page active challenge-page-container">
-      {/* Background - per level */}
-      <img 
+      <img
         key={`bg-${currentLevel}`}
-        src={levelBackgrounds[currentLevel] || levelBackgrounds[0]} 
-        alt="background" 
-        className="fluid-bg" 
+        src={LEVEL_BACKGROUNDS[currentLevel] || LEVEL_BACKGROUNDS[0]}
+        alt="background"
+        className="fluid-bg"
+        loading="eager"
+        decoding="async"
       />
-      
+
       <div className={`challenge-content-wrapper ${isShaking ? 'shake' : ''}`}>
-        
-        {/* Top HUD */}
-        <div className="top-hud" onClick={(e) => e.stopPropagation()}>
+        <div className="top-hud" onClick={(event) => event.stopPropagation()}>
           <div className="hud-left">
-            <div className="gear-icon-wrapper">
-              <GearIcon />
-            </div>
+            <SettingsMenu
+              isMuted={isMuted}
+              isPaused={isPaused}
+              onTogglePause={handleTogglePause}
+              onToggleMute={handleToggleMute}
+              onHome={handleGoHome}
+            />
           </div>
-          
+
           <HappinessMeter score={happinessScore} />
 
           <div className="hud-right">
@@ -153,59 +345,72 @@ const ChallengePage = ({
           </div>
         </div>
 
-        {/* Action Layer overlaying the Farmer */}
         <div className="action-layer-container">
-          {/* Farmer Image Centered - always visible */}
+          {isPaused && (
+            <div className="paused-screen-overlay">
+              <button type="button" className="paused-screen-resume-btn" onClick={handleTogglePause}>
+                <img src={APP_IMAGES.playIcon} alt="resume game" className="paused-screen-icon" />
+              </button>
+            </div>
+          )}
 
-          {/* Render Interactive Action Screen Elements ONLY if stage is NOT 'intro' and NOT post highlighted */}
           {!highlightedOption && (
             <div className="interactive-play-area">
-              
               <div className="question-wood-banner">
                 <span className="question-text-inner">{displayText}</span>
               </div>
 
               {challengeStage === 'action' && (
                 <div className="options-grid-3x3">
-                  {gridOptions.map((letter, idx) => (
-                    <div 
-                      key={idx} 
-                      className="wood-tile-btn" 
-                      onClick={(e) => handleChoose(e, letter)}
+                  {gridOptions.map((letter, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      className={`wood-tile-btn ${letter === currentData.correct ? 'blink-correct-tile' : ''} ${wrongSelectionsThisLevel.includes(letter) ? 'wrong-tile-btn' : ''}`}
+                      onClick={(event) => handleChoose(event, letter)}
                     >
                       {letter}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
-              
-              <div className="wrong-selections-tray">
-                 {wrongSelectionsThisLevel.map((letter, idx) => (
-                   <div key={idx} className="wrong-bubble-indicator">{letter}</div>
-                 ))}
-              </div>
-
             </div>
           )}
 
-          {/* Success Modal Layout */}
           {highlightedOption && (
             <div className="success-overlay-container">
-              <div className="starburst-bg"></div>
-              {sparkles}
+              <img src={APP_IMAGES.glow} alt="Glow effect" className="rotating-glow" loading="eager" decoding="async" />
               <div className="massive-orb">
                 {highlightedOption}
               </div>
             </div>
           )}
+
+          {showTimeoutOverlay && (
+            <div className="success-overlay-container timeout-overlay-container">
+              <div className="timeout-orb" aria-label="timeout answer">
+                {currentData.correct}
+              </div>
+            </div>
+          )}
+
         </div>
 
-        {/* Collected correct answers at bottom center */}
-        {collectedBubbles.length > 0 && !highlightedOption && (
-          <div className="collected-bubbles-tray">
-            {collectedBubbles.map((letter, idx) => (
-              <div key={idx} className="correct-bubble-indicator">{letter}</div>
+        {(visibleBubbleTrail.length > 0 || timedOutOption || (highlightedOption && currentLevelBubble)) && (
+          <div className="collected-bubbles-tray single-bubble-tray">
+            {visibleBubbleTrail.map((item, index) => (
+              <div key={`${item.type}-${index}`} className={item.type === 'correct' ? 'correct-bubble-indicator' : 'wrong-bubble-indicator'}>
+                {item.value}
+              </div>
             ))}
+            {highlightedOption && currentLevelBubble && (
+              <div key={`highlighted-current-${currentLevel}`} className={currentLevelBubble.type === 'correct' ? 'correct-bubble-indicator' : 'wrong-bubble-indicator'}>
+                {currentLevelBubble.value}
+              </div>
+            )}
+            {timedOutOption && (
+              <div key="timeout-current" className="wrong-bubble-indicator">{timedOutOption}</div>
+            )}
           </div>
         )}
 

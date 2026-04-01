@@ -1,13 +1,20 @@
-/* ── Page ── */
 .form-page-container {
   position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  width: 100%;
+  min-height: calc(var(--app-vh) * 100);
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding:
+    calc(var(--safe-top) + 8px)
+    calc(var(--safe-right) + 8px)
+    calc(var(--safe-bottom) + 8px)
+    calc(var(--safe-left) + 8px);
 }
 
 .fluid-bg {
@@ -15,115 +22,116 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: fill;
+  object-fit: cover;
   z-index: 0;
 }
 
-/* ── Wrapper ── */
 .form-content-wrapper {
   position: relative;
   z-index: 1;
-  width: 100%;
-  height: 110%;
+  width: min(100%, 26rem);
+  min-height: min(95dvh, 55rem);
+  overflow: visible;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0;
+  padding-block: clamp(12px, 3vh, 24px);
 }
 
-/* ── Farmer ── */
 .farmer-img-form {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
-  z-index: 1;
+  top: clamp(0.5rem, 2.5vh, 1.4rem);
+  left: 50%;
+  z-index: 2;
+  transform: translateX(-50%);
+  width: min(100%, 27rem);
+  max-width: 27rem;
+  max-height: min(44dvh, 20rem);
+  height: auto;
+  object-fit: contain;
+  object-position: center bottom;
   pointer-events: none;
 }
 
-/* ── Frame wrapper ── */
 .form-frame-wrapper {
   position: relative;
-  top: 10%;
   z-index: 3;
-  width: clamp(280px, 80vw, 420px);
-  height: auto;
+  width: min(94vw, 24.5rem);
+  min-height: clamp(33rem, 70dvh, 37.5rem);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   flex-shrink: 0;
+  margin-top: clamp(11rem, 27vh, 13.5rem);
 }
 
 .form-frame-bg {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 110%;
-  object-fit: fill;
+  left: 50%;
+  top: 50%;
+  width: 124%;
+  height: 136%;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
   z-index: 0;
-  filter: drop-shadow(0 6px 18px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.45));
 }
 
-/* ── Board content ── */
 .form-board-content {
   position: relative;
   z-index: 1;
-  width: 100%;
-  box-sizing: border-box;
+  width: min(100%, 20rem);
+  min-height: clamp(28.25rem, 60dvh, 32rem);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 75px 45px 60px 45px; /* Big top and bottom padding to clear frame art entirely */
-  gap: 16px;
-  margin-bottom: 30px;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  padding: 5.15rem clamp(1.3rem, 5vw, 2.3rem) 3rem;
 }
 
-/* ── Title ── */
 .form-title {
-  font-family: 'Baloo', 'Poppins', Arial, sans-serif;
-  color: #4A2A14;
-  font-size: clamp(28px, 8vw, 36px);
-  font-weight: 700;
-  text-shadow: 1px 1px 2px rgba(255,255,255,0.4);
-  margin-top: 40px;
-  text-align: center;
   width: 100%;
+  margin: 0 0 0.35rem;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 6.8vw, 2.15rem);
+  line-height: 1.05;
+  font-weight: 500;
+  color: #4a2a14;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.35);
 }
 
-/* ── Fields ── */
 .form-fields-container {
-  width: 100%;
+  width: min(100%, 16.5rem);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0.58rem;
 }
 
 .form-input-group {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  gap: 4px; /* Space between label and input */
+  gap: 0.22rem;
 }
 
 .form-label {
-  font-family: 'Baloo', 'Poppins', sans-serif;
-  color: #4A2A14;
-  font-size: clamp(15px, 4.5vw, 18px);
-  font-weight: 700;
-  line-height: 1.2;
-  text-align: center;
   width: 100%;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(0.96rem, 3.7vw, 1.08rem);
+  line-height: 1.1;
+  font-weight: 400;
+  color: #4a2a14;
 }
 
 .input-bg-container {
   position: relative;
   width: 100%;
+  height: clamp(2.1rem, 4.15vh, 2.35rem);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -141,29 +149,29 @@
 .form-input {
   position: relative;
   z-index: 2;
-  width: 88%;
+  width: 86%;
   height: 100%;
-  background: transparent;
+  margin: 0;
+  padding: 0 0.75rem;
   border: none;
   outline: none;
-  padding: 0 10px;
+  background: transparent;
   text-align: center;
-  font-family: 'Poppins', sans-serif;
-  font-size: clamp(14px, 3.5vw, 16px);
-  font-weight: 600;
-  color: #4A2A14;
+  color: #4a2a14;
+  font-family: var(--font-body);
+  font-size: clamp(0.92rem, 3.5vw, 1rem);
+  font-weight: 400;
 }
 
 .form-input::placeholder {
-  color: rgba(74,42,20,0.5);
+  color: rgba(74, 42, 20, 0.5);
 }
 
-/* ── Submit button ── */
 .submit-action-btn {
   position: relative;
-  margin-top: 10px;
-  width: clamp(150px, 65%, 220px);
-  height: 48px;
+  width: clamp(9.5rem, 62%, 12rem);
+  height: clamp(2.7rem, 5.6vh, 3.05rem);
+  margin-top: clamp(0.65rem, 1.8vh, 0.95rem);
   background: transparent;
   border: none;
   outline: none;
@@ -173,8 +181,13 @@
   z-index: 5;
 }
 
-.submit-action-btn:hover  { transform: scale(1.05); }
-.submit-action-btn:active { transform: scale(0.95); }
+.submit-action-btn:hover {
+  transform: scale(1.05);
+}
+
+.submit-action-btn:active {
+  transform: scale(0.95);
+}
 
 .submit-action-btn .btn-bg {
   position: absolute;
@@ -183,7 +196,7 @@
   height: 100%;
   object-fit: fill;
   z-index: 1;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  filter: drop-shadow(2px 4px 0 rgba(55, 31, 13, 0.45));
 }
 
 .submit-action-btn .btn-text {
@@ -194,58 +207,70 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-family: 'Baloo', sans-serif;
-  font-size: clamp(18px, 5vw, 24px);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 5vw, 1.55rem);
+  font-weight: 500;
   color: #3b2410;
-  text-shadow: 1px 1px 1px rgba(255,255,255,0.4);
-  letter-spacing: 0.03em;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.02em;
 }
 
-/* ════ BREAKPOINTS ════ */
 @media (max-width: 380px) {
-  .farmer-img-form       { width: 95vw; height: 38vh; }
-  .form-frame-wrapper    { width: 85vw; }
-  .form-board-content    { padding: 60px 35px 50px 35px; gap: 10px; }
-  .form-title            { font-size: 24px; }
-  .form-label            { font-size: 14px; }
-  .input-bg-container    { height: 38px; }
-  .form-input            { font-size: 13px; }
-  .form-fields-container { gap: 8px; }
-  .submit-action-btn     { width: 65%; height: 42px; margin-top: 6px; }
-  .submit-action-btn .btn-text { font-size: 16px; }
-}
+  .form-content-wrapper {
+    width: min(100%, 22rem);
+  }
 
-@media (min-width: 381px) and (max-width: 600px) {
-  .farmer-img-form       { width: 90vw; height: 42vh; }
-  .form-frame-wrapper    { width: 80vw; }
-  .form-board-content    { padding: 65px 40px 55px 40px; gap: 14px; }
-  .form-title            { font-size: 28px; }
-  .form-fields-container { gap: 10px; }
+  .farmer-img-form {
+    top: clamp(0.35rem, 1.8vh, 1rem);
+    width: min(100%, 21rem);
+    max-height: min(38dvh, 15.5rem);
+  }
+
+  .form-frame-wrapper {
+    width: min(100%, 22rem);
+    min-height: clamp(30rem, 66dvh, 34rem);
+    margin-top: clamp(9.5rem, 24vh, 12rem);
+  }
+
+  .form-board-content {
+    width: min(100%, 18rem);
+    min-height: clamp(25.75rem, 56dvh, 29rem);
+    padding: 4.55rem 1.1rem 2.45rem;
+  }
 }
 
 @media (max-height: 550px) and (orientation: landscape) {
-  .form-content-wrapper  { flex-direction: row; gap: 20px; padding-top: 0; justify-content: center; align-items: center; }
-  .farmer-img-form       { width: 35vw; height: 85vh; margin-bottom: 0; }
-  .form-frame-wrapper    { width: 45vw; margin-bottom: 0; }
-  .form-board-content    { padding: 45px 30px 40px 30px; gap: 8px; }
-  .form-title            { font-size: 18px; }
-  .form-label            { font-size: 12px; }
-  .input-bg-container    { height: 30px; }
-  .form-input            { font-size: 11px; }
-  .form-fields-container { gap: 6px; }
-  .submit-action-btn     { height: 36px; width: 60%; margin-top: 4px; }
-  .submit-action-btn .btn-text { font-size: 14px; }
-}
+  .form-page-container {
+    align-items: flex-start;
+  }
 
-@media (min-width: 601px) and (max-width: 1024px) {
-  .farmer-img-form       { width: 60vw; height: 45vh; }
-  .form-frame-wrapper    { width: 60vw; max-width: 450px; }
-  .form-board-content    { padding: 80px 45px 65px 45px; gap: 20px; }
-  .form-title            { font-size: 34px; }
-  .form-label            { font-size: 18px; }
-  .input-bg-container    { height: 50px; }
-  .form-input            { font-size: 16px; }
-  .submit-action-btn     { width: 55%; height: 55px; margin-top: 15px; }
-  .submit-action-btn .btn-text { font-size: 22px; }
+  .form-content-wrapper {
+    width: min(100%, 44rem);
+    min-height: auto;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    padding-block: 0;
+  }
+
+  .farmer-img-form {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: min(36vw, 19rem);
+    max-height: min(72dvh, 20rem);
+  }
+
+  .form-frame-wrapper {
+    width: min(44vw, 22rem);
+    min-height: clamp(25rem, 82dvh, 29rem);
+    margin-top: 0;
+  }
+
+  .form-board-content {
+    width: min(100%, 17rem);
+    min-height: clamp(22.5rem, 70dvh, 25.5rem);
+    padding: 3.25rem 1.15rem 2.25rem;
+  }
 }

@@ -28,6 +28,7 @@ const pa = {
   
   // Challenge Page
   "happinessMeter": "ਸਫਲਤਾ ਮੀਟਰ",
+  "timeOverTitle": "ਗਲਤ ਜਵਾਬ, ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ!",
   "selectedLetters": "ਚੁਣੇ ਗਏ ਅੱਖਰ",
   "gridOptions": ["ਣ", "ਸੁ", "ਜੈ", "ਬੋ", "ਸ", "ਕ", "ਰ", "ਪ", "ਜੰ"],
   

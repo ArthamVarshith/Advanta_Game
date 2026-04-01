@@ -6,6 +6,7 @@ const HappinessMeter = ({ score }) => {
   const { t } = useLanguage();
 
   const clampedScore = Math.min(Math.max(score, 0), 100);
+  const markerPosition = 4 + (clampedScore * 92) / 100;
   
   return (
     <div className="hud-center">
@@ -13,7 +14,7 @@ const HappinessMeter = ({ score }) => {
       <div className="happiness-meter-bar-wrapper">
         <div 
           className="happiness-meter-marker" 
-          style={{ left: `${clampedScore}%` }}
+          style={{ left: `${markerPosition}%` }}
         ></div>
       </div>
     </div>

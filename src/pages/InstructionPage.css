@@ -1,37 +1,42 @@
 .instruction-page-container {
   position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  width: 100%;
+  min-height: calc(var(--app-vh) * 100);
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: transparent;
+  padding:
+    calc(var(--safe-top) + 18px)
+    calc(var(--safe-right) + 14px)
+    calc(var(--safe-bottom) + 18px)
+    calc(var(--safe-left) + 14px);
 }
 
-/* Frame — wide enough and tall enough to breathe */
 .instruction-board {
   position: relative;
-  width: clamp(300px, 82vw, 500px);
-  min-height: clamp(320px, 55vh, 520px);
-  height: auto;
+  width: min(100%, 27rem);
+  min-height: min(86dvh, 50rem);
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: clamp(12px, 3vh, 28px);
 }
 
-/* Background frame image stretches to match content */
 .board-bg {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
+  width: 123%;
+  height: 136%;
+  object-fit: contain;
   z-index: 0;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.4));
 }
 
-/* Content stack inside the frame */
 .instruction-board-content {
   position: relative;
   z-index: 1;
@@ -39,64 +44,61 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  width: min(82%, 20.5rem);
   box-sizing: border-box;
-
-  /* Generous padding so text never touches the frame edges */
-  padding: clamp(44px, 10vh, 72px) clamp(32px, 8vw, 56px);
-
-  /* Comfortable breathing room between title / text / button */
-  gap: clamp(22px, 4vh, 36px);
+  padding: clamp(56px, 9vh, 82px) 0 clamp(42px, 7vh, 58px);
+  gap: clamp(20px, 4.5vh, 34px);
 }
 
-/* ── Title ── */
 .instruction-title {
-  font-family: 'Baloo', 'Poppins', Arial, sans-serif;
-  color: #4A2A14;
-  font-size: clamp(24px, 6vw, 38px);
+  font-family: var(--font-display);
+  color: #4a2a14;
+  font-size: clamp(28px, 8vw, 38px);
   font-weight: 700;
   margin: 0;
-  text-align: center;
   line-height: 1.2;
-  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.45);
-  letter-spacing: 0.02em;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.4);
 }
 
-/* ── Body text block ── */
 .instruction-text-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 88%;
+  width: min(100%, 18.25rem);
   text-align: center;
-  gap: clamp(10px, 2vw, 16px);
+  gap: 8px;
 }
 
 .instruction-text-body {
-  font-family: 'Poppins', sans-serif;
-  color: #4A2A14;
-  font-size: clamp(13px, 3.4vw, 17px);
-  line-height: 1.7;
-  font-weight: 500;
+  font-family: var(--font-script);
+  color: #5a2d1c;
+  font-size: clamp(18px, 4.5vw, 24px);
+  line-height: 1.65;
+  font-weight: 600;
   margin: 0;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
-/* ── Play button ── */
 .play-action-btn {
   position: relative;
-  width: clamp(150px, 58%, 260px);
-  height: clamp(44px, 10vw, 58px);
+  width: clamp(178px, 72%, 252px);
+  height: clamp(52px, 12vw, 72px);
   background: transparent;
   border: none;
   outline: none;
   padding: 0;
-  margin-top: clamp(4px, 1vw, 10px); /* small extra push below text */
   cursor: pointer;
   transition: transform 0.18s ease;
 }
 
-.play-action-btn:hover  { transform: scale(1.06); }
-.play-action-btn:active { transform: scale(0.96); }
+.play-action-btn:hover {
+  transform: scale(1.06);
+}
+
+.play-action-btn:active {
+  transform: scale(0.96);
+}
 
 .play-action-btn .btn-bg {
   position: absolute;
@@ -105,7 +107,7 @@
   height: 100%;
   object-fit: fill;
   z-index: 1;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.28);
+  filter: drop-shadow(2px 4px 0 rgba(55, 31, 13, 0.45));
 }
 
 .play-action-btn .btn-text {
@@ -116,90 +118,78 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-family: 'Baloo', sans-serif;
-  font-size: clamp(15px, 4vw, 22px);
-  font-weight: 600;
-  color: #3b2410;
-  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.35);
-  letter-spacing: 0.03em;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 6vw, 34px);
+  font-weight: 700;
+  color: #5a2d1c;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  letter-spacing: 0;
 }
 
-/* ════════════════════════════════════════
-   BREAKPOINTS
-   ════════════════════════════════════════ */
-
-/* Small phones  ≤ 380px */
 @media (max-width: 380px) {
-  .instruction-board       { width: 88vw; min-height: clamp(280px, 52vh, 400px); }
+  .instruction-board {
+    width: min(100%, 24.5rem);
+    min-height: min(82dvh, 44rem);
+  }
 
   .instruction-board-content {
-    padding: 36px 24px;
+    width: min(82%, 18rem);
+    padding-top: 52px;
+    padding-bottom: 40px;
     gap: 18px;
   }
-
-  .instruction-title       { font-size: clamp(20px, 6vw, 26px); }
-  .instruction-text-body   { font-size: clamp(12px, 3.6vw, 14px); line-height: 1.6; }
-
-  .play-action-btn {
-    width: 68%;
-    height: clamp(40px, 10vw, 48px);
-  }
-  .play-action-btn .btn-text { font-size: clamp(14px, 4vw, 17px); }
 }
 
-/* Normal phones  381px – 600px */
-@media (min-width: 381px) and (max-width: 600px) {
-  .instruction-board       { width: 82vw; min-height: clamp(300px, 54vh, 460px); }
+@media (max-width: 360px) {
+  .instruction-board {
+    width: min(100%, 22.5rem);
+    min-height: min(78dvh, 38rem);
+  }
+
+  .board-bg {
+    width: 116%;
+    height: 128%;
+  }
 
   .instruction-board-content {
-    padding: 40px 30px;
-    gap: 22px;
+    width: min(84%, 16.75rem);
+    padding-top: 44px;
+    padding-bottom: 34px;
+    gap: 14px;
   }
 
-  .instruction-title       { font-size: clamp(22px, 5.5vw, 30px); }
-  .instruction-text-body   { font-size: clamp(13px, 3.2vw, 15px); line-height: 1.65; }
-
-  .play-action-btn {
-    width: 62%;
-    height: clamp(42px, 10vw, 52px);
+  .instruction-text-container {
+    width: min(100%, 16rem);
   }
-  .play-action-btn .btn-text { font-size: clamp(14px, 3.8vw, 19px); }
+
+  .instruction-text-body {
+    font-size: clamp(16px, 4.2vw, 20px);
+    line-height: 1.5;
+  }
 }
 
-/* Landscape  (short height) */
 @media (max-height: 480px) and (orientation: landscape) {
-  .instruction-board       { width: 52vw; }
+  .instruction-page-container {
+    align-items: flex-start;
+  }
+
+  .instruction-board {
+    width: min(52vw, 28rem);
+    min-height: min(88vh, 30rem);
+  }
 
   .instruction-board-content {
-    padding: 20px 24px;
+    width: min(84%, 18rem);
+    padding: 30px 0;
     gap: 12px;
   }
 
-  .instruction-title       { font-size: clamp(16px, 2.8vw, 22px); }
-  .instruction-text-body   { font-size: clamp(10px, 1.8vw, 13px); line-height: 1.5; }
-
-  .play-action-btn {
-    height: clamp(32px, 6.5vh, 42px);
-    margin-top: 4px;
-  }
-  .play-action-btn .btn-text { font-size: clamp(12px, 2.2vw, 16px); }
-}
-
-/* Tablets  601px – 1024px */
-@media (min-width: 601px) and (max-width: 1024px) {
-  .instruction-board       { width: 58vw; }
-
-  .instruction-board-content {
-    padding: 44px 40px;
-    gap: 26px;
+  .instruction-title {
+    font-size: clamp(24px, 4vw, 32px);
   }
 
-  .instruction-title       { font-size: clamp(26px, 4vw, 34px); }
-  .instruction-text-body   { font-size: clamp(14px, 2.2vw, 17px); }
-
-  .play-action-btn {
-    width: 55%;
-    height: clamp(46px, 7vw, 58px);
+  .instruction-text-body {
+    font-size: clamp(12px, 2vw, 16px);
+    line-height: 1.55;
   }
-  .play-action-btn .btn-text { font-size: clamp(16px, 2.6vw, 21px); }
 }
