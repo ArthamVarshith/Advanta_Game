@@ -44,6 +44,36 @@ export const APP_VIDEOS = {
   end: 'https://res.cloudinary.com/dfkraqvyy/video/upload/v1775006300/Frame_12_compressed_1_fkv40u.mp4',
 };
 
+export const IOS_VIDEO_OVERRIDES = {
+  [APP_VIDEOS.challengeIntro]: 'https://res.cloudinary.com/dfkraqvyy/video/upload/v1775044244/Frame_5_IPhone_lrm7k8.mp4',
+  [APP_VIDEOS.transitionQ2]: 'https://res.cloudinary.com/dfkraqvyy/video/upload/v1775044243/Frame_6_IPhone_fpb70e.mp4',
+  [APP_VIDEOS.transitionQ3]: 'https://res.cloudinary.com/dfkraqvyy/video/upload/v1775044237/Frame_7_IPhone_y3uqod.mp4',
+  [APP_VIDEOS.transitionQ4]: 'https://res.cloudinary.com/dfkraqvyy/video/upload/v1775044245/Frame_8_IPhone_locwaw.mp4',
+  [APP_VIDEOS.transitionQ5]: 'https://res.cloudinary.com/dfkraqvyy/video/upload/v1775044245/Frame_9_IPhone_rx3rot.mp4',
+  [APP_VIDEOS.finalTransition]: 'https://res.cloudinary.com/dfkraqvyy/video/upload/v1775044242/Frame_10_IPhone_dqnlsk.mp4',
+  [APP_VIDEOS.postAnimationTransition]: 'https://res.cloudinary.com/dfkraqvyy/video/upload/v1775044240/Frame_11_IPhone_xyvt0z.mp4',
+  [APP_VIDEOS.end]: 'https://res.cloudinary.com/dfkraqvyy/video/upload/v1775044230/Frame_12_IPhone_eyu8ah.mp4',
+};
+
+export const IOS_VOICEOVER_AUDIO = {
+  [APP_VIDEOS.challengeIntro]: '/assets/Audio/Audio%20files%20for%20IPhone/Frame%205.m4a',
+  [APP_VIDEOS.transitionQ2]: '/assets/Audio/Audio%20files%20for%20IPhone/Frame%206.m4a',
+  [APP_VIDEOS.transitionQ3]: '/assets/Audio/Audio%20files%20for%20IPhone/Frame%207.m4a',
+  [APP_VIDEOS.transitionQ4]: '/assets/Audio/Audio%20files%20for%20IPhone/Frame%208.m4a',
+  [APP_VIDEOS.transitionQ5]: '/assets/Audio/Audio%20files%20for%20IPhone/Frame%209.m4a',
+  [APP_VIDEOS.finalTransition]: '/assets/Audio/Audio%20files%20for%20IPhone/Frame%2010.m4a',
+  [APP_VIDEOS.postAnimationTransition]: '/assets/Audio/Audio%20files%20for%20IPhone/Frame%2011.m4a',
+  [APP_VIDEOS.end]: '/assets/Audio/Audio%20files%20for%20IPhone/Frame%2012.m4a',
+};
+
+export const getPreferredVideoSrc = (src, useIOSOverrides = false) => {
+  if (!src) return src;
+  if (!useIOSOverrides) return src;
+  return IOS_VIDEO_OVERRIDES[src] ?? src;
+};
+
+export const getIOSVoiceoverSrc = (src) => IOS_VOICEOVER_AUDIO[src] ?? '';
+
 export const LEVEL_TRANSITION_VIDEOS = [
   APP_VIDEOS.transitionQ2,
   APP_VIDEOS.transitionQ3,
@@ -93,4 +123,10 @@ export const PRELOAD_VIDEOS = [
   APP_VIDEOS.finalTransition,
   APP_VIDEOS.postAnimationTransition,
   APP_VIDEOS.end,
+];
+
+export const PRELOAD_IOS_VIDEOS = PRELOAD_VIDEOS.map((src) => IOS_VIDEO_OVERRIDES[src] ?? src);
+
+export const PRELOAD_IOS_AUDIO = [
+  ...Object.values(IOS_VOICEOVER_AUDIO),
 ];

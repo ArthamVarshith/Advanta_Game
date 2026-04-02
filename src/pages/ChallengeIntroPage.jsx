@@ -8,18 +8,33 @@ import { APP_IMAGES } from '../config/media';
 import HappinessMeter from '../components/HappinessMeter';
 import SettingsMenu from '../components/SettingsMenu';
 import { useManagedVideoPlayback } from '../hooks/useManagedVideoPlayback';
+import { useIOSVoiceoverPlayback } from '../hooks/useIOSVoiceoverPlayback';
+import { useResolvedVideoSource } from '../hooks/useResolvedVideoSource';
+import { getIOSVoiceoverSrc } from '../config/media';
 
 const ChallengeIntroPage = ({ onStart, onPrevious, onRestartGame, happinessScore, initialSeekTime = 0, navigationMode = 'flow' }) => {
   const videoRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
   const { shouldMuteAll, isPageVisible, isMuted, setIsMuted, setIsGamePaused, hasUserInteracted, isIOSLikeDevice } = useLanguage();
   const shouldMuteVideo = shouldMuteAll || !hasUserInteracted || isIOSLikeDevice;
+  const { resolvedSrc, handleVideoError } = useResolvedVideoSource({ src: APP_VIDEOS.challengeIntro, useIOSOverrides: isIOSLikeDevice });
 
   useManagedVideoPlayback({
     videoRef,
     isPageVisible,
     shouldPlay: !isPaused,
     shouldMute: shouldMuteVideo,
+  });
+
+  useIOSVoiceoverPlayback({
+    videoRef,
+    audioSrc: getIOSVoiceoverSrc(APP_VIDEOS.challengeIntro),
+    mediaKey: APP_VIDEOS.challengeIntro,
+    enabled: isIOSLikeDevice,
+    shouldPlay: !isPaused,
+    shouldMute: shouldMuteAll,
+    isPageVisible,
+    hasUserInteracted,
   });
 
   const handleVideoEnd = () => {
@@ -73,13 +88,14 @@ const ChallengeIntroPage = ({ onStart, onPrevious, onRestartGame, happinessScore
       <video
         ref={videoRef}
         className="challenge-intro-video"
-        src={APP_VIDEOS.challengeIntro}
+        src={resolvedSrc}
         autoPlay
         controls={false}
         muted={shouldMuteVideo}
         playsInline
         disablePictureInPicture
         preload="auto"
+        onError={handleVideoError}
         onLoadedMetadata={applyInitialSeekTime}
         onCanPlay={applyInitialSeekTime}
         onEnded={handleVideoEnd}

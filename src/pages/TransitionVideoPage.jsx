@@ -5,7 +5,9 @@ import SettingsMenu from '../components/SettingsMenu';
 import './TransitionVideoPage.css';
 import './ChallengePage.css';
 import { useManagedVideoPlayback } from '../hooks/useManagedVideoPlayback';
-import { APP_IMAGES, APP_VIDEOS } from '../config/media';
+import { APP_IMAGES, APP_VIDEOS, getIOSVoiceoverSrc } from '../config/media';
+import { useIOSVoiceoverPlayback } from '../hooks/useIOSVoiceoverPlayback';
+import { useResolvedVideoSource } from '../hooks/useResolvedVideoSource';
 
 const TransitionVideoPage = ({ videoSrc, onComplete, onSkipVideo, onPreviousQuestion, onNextQuestion, bubbleTrail, happinessScore, showArrows = true, showControls = false, onRestartGame, initialSeekTime = 0 }) => {
   const videoRef = useRef(null);
@@ -13,6 +15,7 @@ const TransitionVideoPage = ({ videoSrc, onComplete, onSkipVideo, onPreviousQues
   const [isPaused, setIsPaused] = useState(false);
   const { shouldMuteAll, isPageVisible, isMuted, setIsMuted, setIsGamePaused, hasUserInteracted, isIOSLikeDevice } = useLanguage();
   const shouldMuteVideo = shouldMuteAll || !hasUserInteracted || isIOSLikeDevice;
+  const { resolvedSrc, handleVideoError } = useResolvedVideoSource({ src: videoSrc, useIOSOverrides: isIOSLikeDevice });
   const replayStartTimeByVideo = {
     [APP_VIDEOS.transitionQ2]: 6,
     [APP_VIDEOS.transitionQ3]: 8,
@@ -27,6 +30,17 @@ const TransitionVideoPage = ({ videoSrc, onComplete, onSkipVideo, onPreviousQues
     isPageVisible,
     shouldPlay: Boolean(videoSrc) && !isPaused,
     shouldMute: shouldMuteVideo,
+  });
+
+  useIOSVoiceoverPlayback({
+    videoRef,
+    audioSrc: getIOSVoiceoverSrc(videoSrc),
+    mediaKey: `${videoSrc || ''}:${initialSeekTime}`,
+    enabled: isIOSLikeDevice,
+    shouldPlay: Boolean(videoSrc) && !isPaused,
+    shouldMute: shouldMuteAll,
+    isPageVisible,
+    hasUserInteracted,
   });
 
   const handleVideoEnd = () => {
@@ -116,13 +130,14 @@ const TransitionVideoPage = ({ videoSrc, onComplete, onSkipVideo, onPreviousQues
         key={`${videoSrc}-${initialSeekTime}`}
         ref={videoRef}
         className="transition-video"
-        src={videoSrc}
+        src={resolvedSrc}
         autoPlay
         controls={false}
         muted={shouldMuteVideo}
         playsInline
         disablePictureInPicture
         preload="auto"
+        onError={handleVideoError}
         onLoadedMetadata={applyInitialSeekTime}
         onLoadedData={applyInitialSeekTime}
         onCanPlay={applyInitialSeekTime}

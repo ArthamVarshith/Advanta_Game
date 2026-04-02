@@ -9,8 +9,8 @@ import ChallengePage from './pages/ChallengePage';
 import TransitionVideoPage from './pages/TransitionVideoPage';
 import EndPage from './pages/EndPage';
 import FinalAnimationPage from './pages/FinalAnimationPage';
-import { APP_AUDIO, APP_IMAGES, APP_VIDEOS, LEVEL_TRANSITION_VIDEOS } from './config/media';
-import { preloadMediaBundle, preloadVideo } from './utils/preloadMedia';
+import { APP_AUDIO, APP_VIDEOS, getIOSVoiceoverSrc, getPreferredVideoSrc, LEVEL_TRANSITION_VIDEOS, PRELOAD_IMAGES, PRELOAD_IOS_AUDIO, PRELOAD_IOS_VIDEOS, PRELOAD_VIDEOS } from './config/media';
+import { preloadAudio, preloadMediaBundle, preloadVideo } from './utils/preloadMedia';
 
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzk7doqCW5yl04o4cZ_rDyGNFvFIlI5RUOSgZo-2CD0P-LMhBEpdf7UFbFML13F4mu-2A/exec';
 const NORMAL_FRAME_9_VIDEO = APP_VIDEOS.transitionQ5;
@@ -22,7 +22,7 @@ const PREVIOUS_TRANSITION_CONFIG = {
 };
 
 function AppContent() {
-  const { t } = useLanguage();
+  const { t, isIOSLikeDevice } = useLanguage();
 
   const [page, setPage] = useState('introVideo');
   const [currentUser, setCurrentUser] = useState({ name: '', phone: '', district: '', state: '' });
@@ -95,11 +95,11 @@ function AppContent() {
 
   useEffect(() => {
     preloadMediaBundle({
-      images: [APP_IMAGES.frame, APP_IMAGES.buttonPrimary, APP_IMAGES.buttonSecondary, APP_IMAGES.inputPanel, APP_IMAGES.volumeButton],
-      videos: [APP_VIDEOS.intro, APP_VIDEOS.languageBg],
-      audio: [APP_AUDIO.music],
+      images: PRELOAD_IMAGES,
+      videos: isIOSLikeDevice ? PRELOAD_IOS_VIDEOS : PRELOAD_VIDEOS,
+      audio: isIOSLikeDevice ? [APP_AUDIO.music, ...PRELOAD_IOS_AUDIO] : [APP_AUDIO.music],
     });
-  }, []);
+  }, [isIOSLikeDevice]);
 
   useEffect(() => {
     const upcomingVideoSources = [];
@@ -125,8 +125,18 @@ function AppContent() {
       upcomingVideoSources.push(APP_VIDEOS.postAnimationTransition, APP_VIDEOS.end);
     }
 
-    upcomingVideoSources.filter(Boolean).forEach(preloadVideo);
-  }, [currentLevel, page, t.levels.length]);
+    upcomingVideoSources
+      .filter(Boolean)
+      .map((src) => getPreferredVideoSrc(src, isIOSLikeDevice))
+      .forEach(preloadVideo);
+
+    if (isIOSLikeDevice) {
+      upcomingVideoSources
+        .map(getIOSVoiceoverSrc)
+        .filter(Boolean)
+        .forEach(preloadAudio);
+    }
+  }, [currentLevel, isIOSLikeDevice, page, t.levels.length]);
 
   const handleIntroVideoComplete = () => {
     setPage('languagePage');

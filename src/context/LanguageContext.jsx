@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState, useContext } from 'react';
 import hi from '../locales/hi';
 import pa from '../locales/pa';
+import { primeIOSVoiceoverPlayer } from '../utils/iosVoiceoverPlayer';
 
 const translations = {
   hi,
@@ -53,6 +54,9 @@ export function LanguageProvider({ children }) {
 
     const markInteracted = () => {
       setHasUserInteracted(true);
+      if (detectIOSLikeDevice()) {
+        primeIOSVoiceoverPlayer().catch(() => {});
+      }
     };
 
     const interactionEvents = ['pointerdown', 'touchstart', 'click', 'keydown'];
