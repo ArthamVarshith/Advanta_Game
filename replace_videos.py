@@ -10,7 +10,20 @@ replacements = {
     "/assets/Videos/Frame 9 Video.mp4": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1774603458/Frame_9_virfdk.mp4",
     "/assets/Videos/Frame 6 Video.mp4": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1774603445/Frame_6_ykt4pt.mp4",
     "/assets/Videos/Frame 12 Video.mp4": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1774604511/Frame_12_uley5c.mp4",
-    "/assets/Videos/Frame 1 Video.mp4": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1774604516/Frame_1_lwaq7r.mp4"
+    "/assets/Videos/Frame 1 Video.mp4": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1774604516/Frame_1_lwaq7r.mp4",
+    "/assets/Audio/Audio files for IPhone/Frame 5.m4a": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1775143012/Frame_5_pqfhif.wav",
+    "/assets/Audio/Audio files for IPhone/Frame 6.m4a": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1775143012/Frame_6_urtzcl.wav",
+    "/assets/Audio/Audio files for IPhone/Frame 7.m4a": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1775143014/Frame_7_sbaiw7.wav",
+    "/assets/Audio/Audio files for IPhone/Frame 8.m4a": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1775143014/Frame_8_e00ued.wav",
+    "/assets/Audio/Audio files for IPhone/Frame 9.m4a": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1775143012/Frame_9_ei0nsc.wav",
+    "/assets/Audio/Audio files for IPhone/Frame 10.m4a": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1775143012/Frame_10_m0uvv1.wav",
+    "/assets/Audio/Audio files for IPhone/Frame 11.m4a": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1775143012/Frame_11_ehi8hc.wav",
+    "/assets/Audio/Audio files for IPhone/Frame 12.m4a": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1775143013/Frame_12_pmu4kb.wav",
+    "/assets/Audio/Music/This Background Music.wav": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1775143463/This_Background_Music_lz03gq.wav",
+    "/assets/Audio/SFX/correct-answer.mp3?v=1": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1775143488/correct-answer_ccbjlu.mp3",
+    "/assets/Audio/SFX/Wrong.wav?v=1": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1775143489/Wrong_zjpixn.wav",
+    "/assets/Audio/SFX/Time Over.wav?v=1": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1775143490/Time_Over_ru0xad.wav",
+    "/assets/Audio/SFX/Timer.wav?v=1": "https://res.cloudinary.com/dfkraqvyy/video/upload/v1775143491/Timer_vjrkaw.wav"
 }
 
 target_dir = r"c:\Users\artha\OneDrive\Desktop\Game\src"
