@@ -6,7 +6,7 @@ import ScreenLoadingOverlay from '../components/ScreenLoadingOverlay';
 import { useScreenMediaReady } from '../hooks/useScreenMediaReady';
 
 const FinalAnimationPage = ({ onComplete }) => {
-  const backgroundSrc = 'https://res.cloudinary.com/dbyrmzuuw/image/upload/v1773987192/Frame_10_end_nmhghb.png';
+  const backgroundSrc = 'https://res.cloudinary.com/doaw2nfrp/image/upload/v1775460333/Frame_10_end_efufdl.png';
   const [shouldProceed, setShouldProceed] = useState(false);
   const { isReady } = useScreenMediaReady([
     { id: 'post-animation-transition', type: 'video', src: APP_VIDEOS.postAnimationTransition },

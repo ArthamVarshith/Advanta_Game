@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import './TryAgainPage.css';
+import { APP_IMAGES } from '../config/media';
 
 const TryAgainPage = ({ onRetry }) => {
   const { t, shouldMuteAll } = useLanguage();
@@ -27,7 +28,7 @@ const TryAgainPage = ({ onRetry }) => {
 
   return (
     <div className="page active try-again-container">
-      <img src="https://res.cloudinary.com/dbyrmzuuw/image/upload/v1773987108/BG_ndaicp.png" alt="background" className="fluid-bg" />
+      <img src={APP_IMAGES.bgFallbackCropped} alt="background" className="fluid-bg" />
       <div className="try-content-wrapper">
         <div className="try-frame-container">
           <div className="try-frame-content">
